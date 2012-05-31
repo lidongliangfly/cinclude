@@ -10,3 +10,10 @@
 *.lai
 *.la
 *.a
+
+# Vim temporary
+*.sw[opq]
+
+# Generated 
+test/release
+test/debug
