@@ -4,40 +4,40 @@ struct __a {
     int dummy[100];
 };
 
-static int success(void)
+static bool success(void)
 {
     DCHECK;
 
-    return SUCCESS;
+    return true;
 }
 
-static int failure(void)
+static bool failure(void)
 {
     DCHECK;
 
-    return FAILURE;
+    return false;
 }
 
-static int check_assert(void)
+static bool check_assert(void)
 {
     DCHECK;
 
-    MASSERT(FALSE, NOP, "massert test %d\n", __LINE__);
-    ASSERT(FALSE, NOP);
-    MEXPECT(FALSE, NOP, "mexpect test %d\n", __LINE__);
-    EXPECT(FALSE, NOP);
-    DASSERT(FALSE,NOP);
-    EXPECT(success() == SUCCESS, return FAILURE);
-    EXPECT(failure() == SUCCESS, NOP);
+    MASSERT(false, NOP, "massert test %d\n", __LINE__);
+    ASSERT(false, NOP);
+    MEXPECT(false, NOP, "mexpect test %d\n", __LINE__);
+    EXPECT(false, NOP);
+    DASSERT(false,NOP);
+    EXPECT(success(), return false);
+    EXPECT(failure(), NOP);
 
-    return SUCCESS;
+    return true;
 }
 
-static int check_alloc(void)
+static bool check_alloc(void)
 {
     DCHECK;
 
-    int ret = FAILURE;
+    bool ret = false;
     struct __a *p = NULL;
 
     TALLOC(p, goto error);
@@ -54,20 +54,20 @@ static int check_alloc(void)
         ASSERT(p->dummy[i] == 0, goto error);
     }
 
-    ret = SUCCESS;
+    ret = true;
 
 error:
     FREE(p);
-    ASSERT(p == NULL, return FAILURE);
+    ASSERT(p == NULL, return false);
 
     return ret;
 }
 
-static int check_allocs(void)
+static bool check_allocs(void)
 {
     DCHECK;
 
-    int ret = FAILURE;
+    bool ret = false;
     struct __a *p = NULL;
     int const n = 4;
 
@@ -97,64 +97,64 @@ static int check_allocs(void)
     REALLOC(p,1, goto error);
     REALLOC(p,2, goto error);
 
-    ret = SUCCESS;
+    ret = true;
 error:
 
     FREE(p);
-    ASSERT(p == NULL, return FAILURE);
+    ASSERT(p == NULL, return false);
 
     return ret;
 }
 
-static int check_trivial(void)
+static bool check_trivial(void)
 {
     DCHECK;
 
-    ASSERT(max(1,2) == 2, return FAILURE);
-    ASSERT(max(2,1) == 2, return FAILURE);
-    ASSERT(min(1,2) == 1, return FAILURE);
-    ASSERT(min(2,1) == 1, return FAILURE);
-    ASSERT(range(-1,0,1) == 0, return FAILURE);
-    ASSERT(range(-1,-2,1) == -1, return FAILURE);
-    ASSERT(range(-1,2,1) == 1, return FAILURE);
-    ASSERT(range(1,2,3) == 2, return FAILURE);
-    ASSERT(range(1,0,3) == 1, return FAILURE);
-    ASSERT(range(1,4,3) == 3, return FAILURE);
-    ASSERT(abs(-1) == 1, return FAILURE);
-    ASSERT(abs(1) == 1, return FAILURE);
+    ASSERT(max(1,2) == 2, return false);
+    ASSERT(max(2,1) == 2, return false);
+    ASSERT(min(1,2) == 1, return false);
+    ASSERT(min(2,1) == 1, return false);
+    ASSERT(range(-1,0,1) == 0, return false);
+    ASSERT(range(-1,-2,1) == -1, return false);
+    ASSERT(range(-1,2,1) == 1, return false);
+    ASSERT(range(1,2,3) == 2, return false);
+    ASSERT(range(1,0,3) == 1, return false);
+    ASSERT(range(1,4,3) == 3, return false);
+    ASSERT(abs(-1) == 1, return false);
+    ASSERT(abs(1) == 1, return false);
 
     int x = 1, y = 2;
 
     swap(x,y);
 
-    ASSERT(x == 2, return FAILURE);
-    ASSERT(y == 1, return FAILURE);
+    ASSERT(x == 2, return false);
+    ASSERT(y == 1, return false);
 
-    return SUCCESS;
+    return true;
 }
 
-static int check_new(void)
+static bool check_new(void)
 {
     DCHECK;
 
-    int ret = FAILURE;
+    int ret = false;
     struct __a *p = NULL;
 
     ASSERT(p = NEW(struct __a, .dummy = {1,2,3}),
-            return FAILURE);
+            return false);
 
     ASSERT(p->dummy[0] == 1, goto error);
     ASSERT(p->dummy[1] == 2, goto error);
     ASSERT(p->dummy[2] == 3, goto error);
 
-    ret = SUCCESS;
+    ret = true;
 error:
 
     FREE(p);
-    return SUCCESS;
+    return true;
 }
 
-static int check_dump(void)
+static bool check_dump(void)
 {
     DCHECK;
 
@@ -169,7 +169,7 @@ static int check_dump(void)
     DUMP32((uint64_t)(-1));
     DUMP64((uint64_t)(-1));
 
-    return SUCCESS;
+    return true;
 }
 
 int main(int argc, char **argv)
@@ -183,12 +183,12 @@ int main(int argc, char **argv)
     ECHECK;
     DCHECK;
 
-    ASSERT(check_assert() == SUCCESS, return 1);
-    ASSERT(check_alloc() == SUCCESS, return 1);
-    ASSERT(check_allocs() == SUCCESS, return 1);
-    ASSERT(check_dump() == SUCCESS, return 1);
-    ASSERT(check_trivial() == SUCCESS, return 1);
-    ASSERT(check_new() == SUCCESS, return 1);
+    ASSERT(check_assert(), return 1);
+    ASSERT(check_alloc(), return 1);
+    ASSERT(check_allocs(), return 1);
+    ASSERT(check_dump(), return 1);
+    ASSERT(check_trivial(), return 1);
+    ASSERT(check_new(), return 1);
 
     return 0;
 }

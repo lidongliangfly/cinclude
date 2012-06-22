@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
@@ -38,11 +39,13 @@
 		fprintf(stderr, "\x1b[1;31mERR  :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
 	} while (0)
 
-#define MASSERT(b,action,fmt,...) do {if(unlikely(!(b))){ ERR("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} } while (0)
-#define MEXPECT(b,action,fmt,...) do {if(unlikely(!(b))){ WARN("expected (%s): " fmt, #b, ##__VA_ARGS__);action;} } while (0)
+#define MASSERT(b,action,fmt,...) ({bool __b = (bool)(b); if(unlikely(!(__b))){ ERR("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} __b;})
+#define MEXPECT(b,action,fmt,...) ({bool __b = (bool)(b); if(unlikely(!(__b))){ WARN("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} __b;})
+#define MCHECK(b,action,fmt,...) ({bool __b = (bool)(b);if(unlikely(!(__b))){ DBG("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} __b;})
 
 #define ASSERT(b,action) MASSERT(b,action,"\n")
 #define EXPECT(b,action) MEXPECT(b,action,"\n")
+#define CHECK(b,action) MCHECK(b,action,"\n")
 
 #ifdef __DEBUG
 #   define DBG(fmt, args...) do { \
@@ -70,20 +73,23 @@
 #define DUMP32(x) printf("%s = 0x%08x\n", #x, (uint32_t) (x))
 #define DUMP64(x) printf("%s = 0x%016llx\n", #x, (uint64_t) (x))
 
+//#define TRUE            (0==0)
+//#define FALSE           (!TRUE)
 
-#define SUCCESS         (0)
-#define FAILURE         (!(SUCCESS))
-
-#define TRUE            (0==0)
-#define FALSE           (!TRUE)
-
+#ifdef __cplusplus
+#   define EXTERN_C_BEGIN extern "C" {
+#   define EXTERN_C_END }
+#else
+#   define EXTERN_C_BEGIN 
+#   define EXTERN_C_END 
+#endif
 
 #define CLEAR(x) memset(&(x), 0, sizeof(x))
 #define CLEARS(a,sz) ({typeof(sz) __sz = (sz);memset(a,0x00,(sizeof(*(a))) * __sz);})
 
 #define ALLOC(t) (t = (typeof(t))calloc(1,sizeof(typeof(*(t)))))
 #define TALLOC(h,action) do {h=NULL;if(!(ALLOC(h))){ERR("Cannot alloc %zuB\n",sizeof(*(h)));action;}} while (0)
-#define TALLOCS(h,num,action) ({typeof(num) __num; if(!((h) = (typeof (h))(calloc((sizeof (typeof(*(h)))), __num)))){ERR("Cannot alloc %zuB\n",(size_t)(sizeof(*(h))*__num));action;} })
+#define TALLOCS(h,num,action) ({typeof(num) __num = (num); if(!((h) = (typeof (h))(calloc((sizeof (*(h))), __num)))){ERR("Cannot alloc %zuB\n",(size_t)(sizeof(*(h))*__num));action;} })
 
 #define REALLOC(t,num,action) ({ \
         typeof(t) __t = (t); \

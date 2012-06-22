@@ -1,7 +1,7 @@
 cinclude
 ========
 
-C utility headers
+GNU-C utility headers
 
 License
 -----------------------
