@@ -35,12 +35,12 @@ struct list_head_t {
  * var is set to NULL at the end of iteration. */
 #define list_foreach(head,var)  \
     for((head)->list ? list_downcast(var,((head)->list)) : ((var) = NULL ); \
-	(var); \
-	(var)->list_entry.next ? list_downcast(var,((var)->list_entry.next)) : ((var) = NULL ))
+            (var); \
+            (var)->list_entry.next ? list_downcast(var,((var)->list_entry.next)) : ((var) = NULL ))
 
 /* O(n):query length of the list by recursive tail call. 
    (potential performance penalty on -O0 compiler flag) */
-static inline bool 
+    static inline bool 
 list_length(struct list_head_t *head)
 {
     DASSERT(head, return -1);
@@ -57,7 +57,7 @@ list_length(struct list_head_t *head)
 }
 
 /* O(n):perform callback function 'func' with parameter 'param' iteratively. */
-static inline bool 
+    static inline bool 
 list_map2(struct list_head_t *head, list_map_2_f func, void *param)
 {
     struct list_t *p;
@@ -71,7 +71,7 @@ list_map2(struct list_head_t *head, list_map_2_f func, void *param)
     return true;
 }
 
-static inline bool 
+    static inline bool 
 list_map1(struct list_head_t *head, list_map_1_f func)
 {
     struct list_t *p;
@@ -87,7 +87,7 @@ list_map1(struct list_head_t *head, list_map_1_f func)
 
 /* O(n):remove a given elememt from a list. 
  * if deallocator is set, then call it. otherwise do nothing */ 
-static inline bool 
+    static inline bool 
 list_remove(struct list_head_t *head, struct list_t *item)
 {
     DASSERT(head, return false);
@@ -106,7 +106,7 @@ list_remove(struct list_head_t *head, struct list_t *item)
             } else {
                 prev->next = item->next;
             }
-            
+
             if(item == head->tail) {
                 head->tail = prev;
             }
@@ -127,7 +127,7 @@ list_remove(struct list_head_t *head, struct list_t *item)
 
 /* O(n):apply list_remove until destroy all elems.
    we assume all the deletion must succeed as long as an elem was given :p */
-static inline void 
+    static inline void 
 list_destroy(struct list_head_t *head)
 {
     while(list_remove(head, head->list));
@@ -135,7 +135,7 @@ list_destroy(struct list_head_t *head)
 
 /* O(n):iterate elements by 'is_dead' callback,
    successively delete the elem if 'is_dead' results non-0 */
-static inline bool 
+    static inline bool 
 list_sweep(struct list_head_t *head, list_map_1_f is_dead)
 {
     struct list_t *p, *prev = NULL;
@@ -162,7 +162,7 @@ list_sweep(struct list_head_t *head, list_map_1_f is_dead)
 }
 
 /* list_remove without clean function */
-static inline struct list_t *
+    static inline struct list_t *
 list_extract(struct list_head_t *head,struct list_t *item)
 {
     DASSERT(head,return NULL);
@@ -197,12 +197,12 @@ list_extract(struct list_head_t *head,struct list_t *item)
 }
 
 /* O(1):add elem to the tail */
-static inline bool 
+    static inline bool 
 list_append(struct list_head_t *head, struct list_t *elem)
 {
     DASSERT(head, return false);
     DASSERT(elem, return false);
-    
+
     if(!head->list) {
         head->list = elem;
         head->tail = elem;
@@ -218,12 +218,12 @@ list_append(struct list_head_t *head, struct list_t *elem)
 }
 
 /* O(1):add elem to the head */
-static inline bool 
+    static inline bool 
 list_push(struct list_head_t *head, struct list_t *elem)
 {
     DASSERT(head,return false);
     DASSERT(elem,return false);
-    
+
     struct list_t *old_list = head->list;
     head->list = elem;
     elem->next = old_list;
@@ -236,13 +236,13 @@ list_push(struct list_head_t *head, struct list_t *elem)
 }
 
 /* O(1):pop elem at the head */
-static inline struct list_t *
+    static inline struct list_t *
 list_pop(struct list_head_t *head)
 {
     DASSERT(head,return NULL);
 
     struct list_t *ret = NULL;
-    
+
     ret = head->list;
 
     if(ret) {
@@ -258,7 +258,7 @@ list_pop(struct list_head_t *head)
 }
 
 /* O(n): reverse list */
-static inline bool 
+    static inline bool 
 list_reverse(struct list_head_t *head)
 {
     DASSERT(head,return false);

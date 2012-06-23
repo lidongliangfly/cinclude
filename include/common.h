@@ -28,16 +28,16 @@
 #endif
 
 #define WARN(fmt, ...) do { \
-		fprintf(stderr, "\x1b[35mWARN :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
-	} while (0)
+        fprintf(stderr, "\x1b[35mWARN :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
 
 #define INFO(fmt, ...) do { \
-		fprintf(stderr, "\x1b[36mINFO :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__ ); \
-	} while (0)
+        fprintf(stderr, "\x1b[36mINFO :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__ ); \
+    } while (0)
 
 #define ERR(fmt, ...) do { \
-		fprintf(stderr, "\x1b[1;31mERR  :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
-	} while (0)
+        fprintf(stderr, "\x1b[1;31mERR  :%s:%s:%d: " fmt "\x1b[0m",  __BASE_FILE__, __FUNCTION__, __LINE__, ##__VA_ARGS__); \
+    } while (0)
 
 #define MASSERT(b,action,fmt,...) ({bool __b = (bool)(b); if(unlikely(!(__b))){ ERR("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} __b;})
 #define MEXPECT(b,action,fmt,...) ({bool __b = (bool)(b); if(unlikely(!(__b))){ WARN("failed (%s): " fmt, #b, ##__VA_ARGS__);action;} __b;})
@@ -49,8 +49,8 @@
 
 #ifdef __DEBUG
 #   define DBG(fmt, args...) do { \
-		fprintf(stderr, "DBG  :%s:%s:%d: " fmt,  __BASE_FILE__, __FUNCTION__, __LINE__, ## args); \
-	} while (0)
+        fprintf(stderr, "DBG  :%s:%s:%d: " fmt,  __BASE_FILE__, __FUNCTION__, __LINE__, ## args); \
+    } while (0)
 #   define DASSERT(b,action) MASSERT(b,action,"(debug)\n")
 #else
 #   define DBG( fmt, args...)
@@ -128,4 +128,4 @@
 #   define range(l,x,r) (min(max(l,x),r))
 #endif
 
-#endif				
+#endif
