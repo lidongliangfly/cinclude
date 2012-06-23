@@ -1,11 +1,11 @@
 #ifndef _CINCLUDE_BM_TIMER_H
 #define _CINCLUDE_BM_TIMER_H
 #ifdef __MACH__
-#	include <mach/mach.h>
-#	include <mach/clock.h>
+#    include <mach/mach.h>
+#    include <mach/clock.h>
 #else
-#	include <sys/time.h>
-#	include <time.h>
+#    include <sys/time.h>
+#    include <time.h>
 #endif
 
 #include "common.h"
@@ -22,17 +22,17 @@ static inline void
 timer_gettime(__timespec_t *ts)
 {
 #ifdef __MACH__
-	/* 
-	 * http://boredzo.org/blog/archives/2006-11-26/how-to-use-mach-clocks
-	 */
-	clock_serv_t host_clock;
+    /* 
+     * http://boredzo.org/blog/archives/2006-11-26/how-to-use-mach-clocks
+     */
+    clock_serv_t host_clock;
 
-	/* XXX: waste a few micro seconds */
-	host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &host_clock);
+    /* XXX: waste a few micro seconds */
+    host_get_clock_service(mach_host_self(), REALTIME_CLOCK, &host_clock);
 
-	clock_get_time(host_clock, ts);
+    clock_get_time(host_clock, ts);
 #else
-	clock_gettime(CLOCK_MONOTONIC, ts);
+    clock_gettime(CLOCK_MONOTONIC, ts);
 #endif
 }
 
@@ -67,8 +67,8 @@ timer_print(timer_handle h,const char *reporter)
    
     avg = (double)h->sum / (double)h->cnt / 1000.0;
 
-	INFO("%s spends: min[%ldus], max[%ldus], avg[%.3fms], in %u times\n", 
-			reporter, h->min, h->max, avg, h->cnt);
+    INFO("%s spends: min[%ldus], max[%ldus], avg[%.3fms], in %u times\n", 
+            reporter, h->min, h->max, avg, h->cnt);
 }
 
 static inline void
@@ -98,7 +98,7 @@ timer_countdown_is_finish(timer_handle h)
     timer_gettime(&tv);
 
     diff = (tv.tv_sec - h->tv1.tv_sec)  * 1e9 + 
-		(tv.tv_nsec - h->tv1.tv_nsec);
+        (tv.tv_nsec - h->tv1.tv_nsec);
 
     return diff > h->tick;
 }
@@ -116,25 +116,25 @@ timer_lap_end(timer_handle h)
 {
     timer_gettime(&h->tv2);
 
-	long            usec;
-	long            avg = 0;
+    long            usec;
+    long            avg = 0;
 
-	usec = 
-		(h->tv2.tv_nsec - h->tv1.tv_nsec) / 1000 + 
-		(h->tv2.tv_sec - h->tv1.tv_sec) * 1000000;
+    usec = 
+        (h->tv2.tv_nsec - h->tv1.tv_nsec) / 1000 + 
+        (h->tv2.tv_sec - h->tv1.tv_sec) * 1000000;
 
-	if(h->max < usec) h->max = usec;
+    if(h->max < usec) h->max = usec;
 
-	if(h->active) {
-		if(h->min > usec) h->min = usec;
-	} else {
-		h->min = usec;
-	}
+    if(h->active) {
+        if(h->min > usec) h->min = usec;
+    } else {
+        h->min = usec;
+    }
 
-	h->sum += usec;
-	h->cnt++;
-	avg = h->sum / h->cnt;
-	h->active = true;
+    h->sum += usec;
+    h->cnt++;
+    avg = h->sum / h->cnt;
+    h->active = true;
 }
 
 EXTERN_C_END
