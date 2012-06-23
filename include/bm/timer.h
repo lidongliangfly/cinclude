@@ -19,7 +19,7 @@ typedef struct timespec __timespec_t;
 #endif
 
 static inline void
-timer_gettime(__timespec_t *ts)
+bmtimer_gettime(__timespec_t *ts)
 {
 #ifdef __MACH__
     /* 
@@ -36,7 +36,7 @@ timer_gettime(__timespec_t *ts)
 #endif
 }
 
-struct timer_obj {
+struct bmtimer_obj {
     __timespec_t tv1;
     __timespec_t tv2;
     long         sum;
@@ -47,19 +47,19 @@ struct timer_obj {
     bool         active;
 };
 
-typedef struct timer_obj *timer_handle;
+typedef struct bmtimer_obj *bmtimer_handle;
 
 /******************************************************************************
  *                          INLINE FUNCTIONS
  ******************************************************************************/
 static inline void 
-timer_delete(timer_handle h)
+bmtimer_delete(bmtimer_handle h)
 {
     FREE(h);
 }
 
 static inline void 
-timer_print(timer_handle h,const char *reporter)
+bmtimer_print(bmtimer_handle h,const char *reporter)
 {
     double avg = 0;
     
@@ -72,30 +72,30 @@ timer_print(timer_handle h,const char *reporter)
 }
 
 static inline void
-timer_countdown_usec(timer_handle h, double time_usec)
+bmtimer_countdown_usec(bmtimer_handle h, double time_usec)
 {
-    timer_gettime(&h->tv1);
+    bmtimer_gettime(&h->tv1);
 
     h->tick = (time_usec * 1e3);
 }
 
 static inline  void
-timer_countdown_sec(timer_handle h, double time)
+bmtimer_countdown_sec(bmtimer_handle h, double time)
 {
-    timer_gettime(&h->tv1);
+    bmtimer_gettime(&h->tv1);
 
     h->tick = (time * 1e9);
 }
 
 static inline bool
-timer_countdown_is_finish(timer_handle h)
+bmtimer_countdown_is_finish(bmtimer_handle h)
 {
     __timespec_t tv;
     double diff;
 
     if(h->tick < 0) return false;
 
-    timer_gettime(&tv);
+    bmtimer_gettime(&tv);
 
     diff = (tv.tv_sec - h->tv1.tv_sec)  * 1e9 + 
         (tv.tv_nsec - h->tv1.tv_nsec);
@@ -104,17 +104,17 @@ timer_countdown_is_finish(timer_handle h)
 }
 
 static inline void 
-timer_lap_start(timer_handle h)
+bmtimer_lap_start(bmtimer_handle h)
 {
     ASSERT(h, return);
 
-    timer_gettime(&h->tv1);
+    bmtimer_gettime(&h->tv1);
 }
 
 static inline void 
-timer_lap_end(timer_handle h)
+bmtimer_lap_end(bmtimer_handle h)
 {
-    timer_gettime(&h->tv2);
+    bmtimer_gettime(&h->tv2);
 
     long            usec;
     long            avg = 0;
